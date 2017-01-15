@@ -21,6 +21,6 @@ defmodule Edu.Group do
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:name, :course_id, :location_id])
-    |> validate_required([:name, :location_id])
+    |> validate_required([:location_id])
   end
 end

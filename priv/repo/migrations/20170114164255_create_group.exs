@@ -3,7 +3,7 @@ defmodule Edu.Repo.Migrations.CreateGroup do
 
   def change do
     create table(:groups) do
-      add :name, :text, null: false
+      add :name, :text
       add :started_at, :utc_datetime
       add :finished_at, :utc_datetime
 

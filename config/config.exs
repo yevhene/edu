@@ -13,7 +13,7 @@ config :edu,
 config :edu, Edu.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "U8g+Xmu0hHxIAG3IPzmZdyp/qN2wU31K1qb9wRTien2mYVW/HgrTdOwSLE8dLvGl",
-  render_errors: [view: Edu.ErrorView, accepts: ~w(html json)],
+  render_errors: [view: Edu.ErrorView, accepts: ~w(json)],
   pubsub: [name: Edu.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
