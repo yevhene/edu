@@ -3,19 +3,22 @@ defmodule Edu.MentorController do
 
   alias Edu.Mentor
 
-  def index(conn, _params) do
-    mentors = Repo.all(Mentor)
+  def index(conn, %{"group_id" => group_id}) do
+    mentors = Repo.all from m in Mentor,
+      where: m.group_id == ^group_id
     render(conn, "index.json", mentors: mentors)
   end
 
-  def create(conn, %{"mentor" => mentor_params}) do
-    changeset = Mentor.changeset(%Mentor{}, mentor_params)
+  def create(conn, %{"group_id" => group_id, "mentor" => mentor_params}) do
+    params = Map.merge(mentor_params, %Mentor{group_id: group_id})
+    changeset = Mentor.changeset(%Mentor{}, params)
 
     case Repo.insert(changeset) do
       {:ok, mentor} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", mentor_path(conn, :show, mentor))
+        |> put_resp_header("location",
+                           group_mentor_path(conn, :show, group_id, mentor))
         |> render("show.json", mentor: mentor)
       {:error, changeset} ->
         conn
@@ -24,14 +27,19 @@ defmodule Edu.MentorController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    mentor = Repo.get!(Mentor, id)
+  def show(conn, %{"group_id" => group_id, "id" => id}) do
+    mentor = Repo.one! from m in Mentor,
+      where: m.group_id == ^group_id and m.id == ^id
     render(conn, "show.json", mentor: mentor)
   end
 
-  def update(conn, %{"id" => id, "mentor" => mentor_params}) do
-    mentor = Repo.get!(Mentor, id)
-    changeset = Mentor.changeset(mentor, mentor_params)
+  def update(conn, %{"group_id" => group_id,
+                     "id" => id,
+                     "mentor" => mentor_params}) do
+    mentor = Repo.one! from m in Mentor,
+      where: m.group_id == ^group_id and m.id == ^id
+    params = Map.merge(mentor_params, %Mentor{group_id: group_id})
+    changeset = Mentor.changeset(mentor, params)
 
     case Repo.update(changeset) do
       {:ok, mentor} ->
@@ -43,8 +51,9 @@ defmodule Edu.MentorController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    mentor = Repo.get!(Mentor, id)
+  def delete(conn, %{"group_id" => group_id, "id" => id}) do
+    mentor = Repo.one! from m in Mentor,
+      where: m.group_id == ^group_id and m.id == ^id
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).

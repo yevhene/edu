@@ -8,9 +8,10 @@ defmodule Edu.Router do
   scope "/", Edu do
     pipe_through :api
 
-    resources "/groups", GroupController, except: [:new, :edit]
-    resources "/mentors", MentorController, except: [:new, :edit]
-    resources "/students", StudentController, except: [:new, :edit]
+    resources "/groups", GroupController, except: [:new, :edit] do
+      resources "/mentors", MentorController, except: [:new, :edit]
+      resources "/students", StudentController, except: [:new, :edit]
+    end
 
     resources "/coordinators", CoordinatorController, except: [:new, :edit]
     resources "/courses", CourseController, except: [:new, :edit]
