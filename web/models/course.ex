@@ -15,7 +15,7 @@ defmodule Edu.Course do
   """
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
+    |> cast(params, [:name, :link])
     |> validate_required([:name])
   end
 end

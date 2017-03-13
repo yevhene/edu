@@ -2,7 +2,7 @@ defmodule Edu.UserControllerTest do
   use Edu.ConnCase
 
   alias Edu.User
-  @valid_attrs %{email: "some content"}
+  @valid_attrs %{email: "user@example.com", password: "password"}
   @invalid_attrs %{}
 
   setup %{conn: conn} do
@@ -10,15 +10,22 @@ defmodule Edu.UserControllerTest do
   end
 
   test "lists all entries on index", %{conn: conn} do
+    Repo.insert! User.changeset(%User{}, @valid_attrs)
     conn = get conn, user_path(conn, :index)
-    assert json_response(conn, 200)["data"] == []
+
+    assert length(json_response(conn, 200)["data"]) == 1
   end
 
   test "shows chosen resource", %{conn: conn} do
-    user = Repo.insert! %User{}
+    user = Repo.insert! User.changeset(%User{}, @valid_attrs)
     conn = get conn, user_path(conn, :show, user)
-    assert json_response(conn, 200)["data"] == %{"id" => user.id,
-      "email" => user.email}
+
+    assert json_response(conn, 200)["data"] == %{
+      "id" => user.id,
+      "email" => user.email,
+      "inserted_at" => DateTime.to_iso8601(user.inserted_at),
+      "updated_at" => DateTime.to_iso8601(user.updated_at)
+    }
   end
 
   test "renders page not found when id is nonexistent", %{conn: conn} do
@@ -27,33 +34,41 @@ defmodule Edu.UserControllerTest do
     end
   end
 
-  test "creates and renders resource when data is valid", %{conn: conn} do
+  test "creates resource when data is valid", %{conn: conn} do
     conn = post conn, user_path(conn, :create), user: @valid_attrs
-    assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(User, @valid_attrs)
+    id = json_response(conn, 201)["data"]["id"]
+
+    assert id
+    assert Repo.get(User, id)
   end
 
-  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+  test "does not create resource when data is invalid", %{conn: conn} do
     conn = post conn, user_path(conn, :create), user: @invalid_attrs
+
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    user = Repo.insert! %User{}
-    conn = put conn, user_path(conn, :update, user), user: @valid_attrs
-    assert json_response(conn, 200)["data"]["id"]
-    assert Repo.get_by(User, @valid_attrs)
+  test "updates resource when data is valid", %{conn: conn} do
+    user = Repo.insert! User.changeset(%User{}, @valid_attrs)
+    new_valid_attrs = %{email: "newemail@example.com"}
+    conn = put conn, user_path(conn, :update, user), user: new_valid_attrs
+
+    assert json_response(conn, 200)["data"]["id"] == user.id
+    assert Repo.get_by(User, new_valid_attrs)
   end
 
-  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    user = Repo.insert! %User{}
-    conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
+  test "does not update resource when data is invalid", %{conn: conn} do
+    user = Repo.insert! User.changeset(%User{}, @valid_attrs)
+    new_valid_attrs = %{email: nil}
+    conn = put conn, user_path(conn, :update, user), user: new_valid_attrs
+
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   test "deletes chosen resource", %{conn: conn} do
-    user = Repo.insert! %User{}
+    user = Repo.insert! User.changeset(%User{}, @valid_attrs)
     conn = delete conn, user_path(conn, :delete, user)
+
     assert response(conn, 204)
     refute Repo.get(User, user.id)
   end

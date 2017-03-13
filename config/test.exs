@@ -17,3 +17,7 @@ config :edu, Edu.Repo,
   database: "edu_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+# Faster password creation
+config :comeonin, bcrypt_log_rounds: 4
+config :comeonin, pbkdf2_rounds: 4

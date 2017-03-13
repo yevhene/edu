@@ -4,6 +4,7 @@ defmodule Edu.Repo.Migrations.CreateUser do
   def change do
     create table(:users) do
       add :email, :text, null: false
+      add :password_hash, :string, null: false
 
       timestamps(type: :utc_datetime)
     end
