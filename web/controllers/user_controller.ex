@@ -9,7 +9,7 @@ defmodule Edu.UserController do
   end
 
   def create(conn, %{"user" => user_params}) do
-    changeset = User.changeset_create(%User{}, user_params)
+    changeset = User.create_changeset(%User{}, user_params)
 
     case Repo.insert(changeset) do
       {:ok, user} ->

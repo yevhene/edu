@@ -1,4 +1,6 @@
 defmodule Edu.User do
+  import Comeonin.Bcrypt, only: [hashpwsalt: 1]
+
   use Edu.Web, :model
 
   schema "users" do
@@ -14,8 +16,9 @@ defmodule Edu.User do
     timestamps(type: :utc_datetime)
   end
 
-  def changeset_create(struct, params \\ %{}) do
-    changeset(struct, params)
+  def create_changeset(struct, params \\ %{}) do
+    struct
+    |> changeset(params)
     |> validate_required([:password])
   end
 
@@ -26,15 +29,15 @@ defmodule Edu.User do
     |> unique_constraint(:email)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 6)
-    |> hash_password(:password, :password_hash)
+    |> hash_password
   end
 
-  defp hash_password(changeset, source, dest) do
-    if password = get_change(changeset, source) do
-      changeset
-      |> put_change(dest, Comeonin.Bcrypt.hashpwsalt(password))
-    else
-      changeset
+  defp hash_password(changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, changes: %{password: password}} ->
+        put_change(changeset, :password_hash, hashpwsalt(password))
+      _ ->
+        changeset
     end
   end
 end

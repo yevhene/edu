@@ -3,30 +3,55 @@ defmodule Edu.UserTest do
 
   alias Edu.User
 
-  @valid_attrs %{email: "user@example.com", password: "password"}
+  describe "#create_changeset" do
+    @valid_attrs %{email: "user@example.com", password: "password"}
 
-  test "changeset with valid attributes" do
-    changeset = User.changeset(%User{}, @valid_attrs)
-    assert changeset.valid?
+    test "changeset with valid attributes" do
+      changeset = User.create_changeset(%User{}, @valid_attrs)
+
+      assert changeset.valid?
+    end
+
+    test "changeset with no password" do
+      changeset = User.create_changeset(
+        %User{}, %{@valid_attrs | password: nil}
+      )
+
+      refute changeset.valid?
+    end
   end
 
-  test "changeset with no email" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | email: nil})
-    refute changeset.valid?
-  end
+  describe "#changeset" do
+    @valid_attrs %{email: "user@example.com", password: "password"}
 
-  test "changeset with wrong email format" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | email: "user"})
-    refute changeset.valid?
-  end
+    test "changeset with valid attributes" do
+      changeset = User.changeset(%User{}, @valid_attrs)
 
-  test "changeset with no password" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | password: nil})
-    refute changeset.valid?
-  end
+      assert changeset.valid?
+    end
 
-  test "changeset with short password" do
-    changeset = User.changeset(%User{}, %{@valid_attrs | password: "pass"})
-    refute changeset.valid?
+    test "changeset with no email" do
+      changeset = User.changeset(%User{}, %{@valid_attrs | email: nil})
+
+      refute changeset.valid?
+    end
+
+    test "changeset with wrong email format" do
+      changeset = User.changeset(%User{}, %{@valid_attrs | email: "user"})
+
+      refute changeset.valid?
+    end
+
+    test "changeset with no password" do
+      changeset = User.changeset(%User{}, %{@valid_attrs | password: nil})
+
+      assert changeset.valid?
+    end
+
+    test "changeset with short password" do
+      changeset = User.changeset(%User{}, %{@valid_attrs | password: "pass"})
+
+      refute changeset.valid?
+    end
   end
 end

@@ -1,21 +1,23 @@
 defmodule Edu.ErrorViewTest do
   use Edu.ConnCase, async: true
 
-  # Bring render/3 and render_to_string/3 for testing custom views
-  import Phoenix.View
+  import Phoenix.View, only: [render_to_string: 3]
 
-  test "renders 404.html" do
-    assert render_to_string(Edu.ErrorView, "404.html", []) ==
-           "Page not found"
+  test "renders 404.json" do
+    content = render_to_string(Edu.ErrorView, "404.json", [])
+
+    assert String.contains?(content, "Page not found")
   end
 
-  test "render 500.html" do
-    assert render_to_string(Edu.ErrorView, "500.html", []) ==
-           "Internal server error"
+  test "render 500.json" do
+    content = render_to_string(Edu.ErrorView, "500.json", [])
+
+    assert String.contains?(content, "Internal server error")
   end
 
   test "render any other" do
-    assert render_to_string(Edu.ErrorView, "505.html", []) ==
-           "Internal server error"
+    content = render_to_string(Edu.ErrorView, "505.json", [])
+
+    assert String.contains?(content, "Internal server error")
   end
 end
