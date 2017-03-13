@@ -5,19 +5,33 @@ defmodule Edu.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", Edu do
-    pipe_through :api
+  pipeline :auth do
+    plug Edu.Plugs.Authenticate
+  end
 
-    resources "/groups", GroupController, except: [:new, :edit] do
-      resources "/mentors", MentorController, except: [:new, :edit]
-      resources "/students", StudentController, except: [:new, :edit]
+  #@crud [:index, :show, :create, :update, :delete]
+
+  scope "/auth", Edu.Auth, as: :auth do
+    scope "/" do
+      pipe_through :api
+
+      resources "/session", SessionController,
+        only: [:create], singleton: true
+      resources "/registration", RegistrationController,
+        only: [:create], singleton: true
     end
 
-    resources "/coordinators", CoordinatorController, except: [:new, :edit]
-    resources "/courses", CourseController, except: [:new, :edit]
-    resources "/locations", LocationController, except: [:new, :edit]
-    resources "/regions", RegionController, except: [:new, :edit]
-    resources "/sessions", SessionController, except: [:new, :edit]
-    resources "/users", UserController, except: [:new, :edit]
+    scope "/" do
+      pipe_through [:api, :auth]
+
+      resources "/session", SessionController,
+        only: [:show, :delete], singleton: true
+      resources "/registration", RegistrationController,
+        only: [:show, :update, :delete], singleton: true
+    end
   end
+
+  #scope "/", Edu do
+  #  pipe_through [:api, :auth]
+  #end
 end

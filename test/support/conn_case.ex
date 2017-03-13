@@ -40,6 +40,24 @@ defmodule Edu.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Edu.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    conn = Phoenix.ConnTest.build_conn()
+    params = []
+
+    {conn, params} = unauthorized(conn, tags, params)
+
+    params = params ++ [conn: conn]
+    {:ok, params}
+  end
+
+  defp unauthorized(conn, tags, params) do
+    if !tags[:unauthorized] do
+      session = Edu.Factory.insert(:session)
+      params = params ++ [session: session]
+      conn = conn |>
+        Plug.Conn.put_req_header("authorization", "Bearer #{session.token}")
+      {conn, params}
+    else
+      {conn, params}
+    end
   end
 end

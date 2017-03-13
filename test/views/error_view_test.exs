@@ -3,6 +3,12 @@ defmodule Edu.ErrorViewTest do
 
   import Phoenix.View, only: [render_to_string: 3]
 
+  test "renders 401.json" do
+    content = render_to_string(Edu.ErrorView, "401.json", [])
+
+    assert String.contains?(content, "Unauthorized")
+  end
+
   test "renders 404.json" do
     content = render_to_string(Edu.ErrorView, "404.json", [])
 

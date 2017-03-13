@@ -21,6 +21,7 @@ defmodule Edu.ModelCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import Edu.Factory
       import Edu.ModelCase
     end
   end

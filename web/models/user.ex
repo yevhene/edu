@@ -16,13 +16,13 @@ defmodule Edu.User do
     timestamps(type: :utc_datetime)
   end
 
-  def create_changeset(struct, params \\ %{}) do
+  def create_registration_changeset(struct, params \\ %{}) do
     struct
-    |> changeset(params)
+    |> update_registration_changeset(params)
     |> validate_required([:password])
   end
 
-  def changeset(struct, params \\ %{}) do
+  def update_registration_changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:email, :password])
     |> validate_required([:email])

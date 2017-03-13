@@ -6,7 +6,7 @@ defmodule Edu.Repo.Migrations.CreateSession do
       add :token, :text, null: false
       add :expired_at, :utc_datetime
 
-      add :user_id, references(:users), null: false
+      add :user_id, references(:users, on_delete: :delete_all), null: false
 
       timestamps(type: :utc_datetime)
     end
