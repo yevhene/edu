@@ -24,6 +24,7 @@ defmodule Edu.ConnCase do
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
+      import Edu.Factory
 
       import Edu.Router.Helpers
 
